@@ -1,10 +1,11 @@
 import type {Word} from './lessons';
+import {readMaterials,type ImportedLesson} from './materials';
 export type ReviewWord=Word&{id:string;lessonId:string;source:'manual'|'assessment';mastered:boolean;addedAt:string;score?:number;reviews:number};
 export type PracticeLog={id:string;lessonId:string;date:string;seconds:number;confidence:number};
-export type LabState={review:ReviewWord[];logs:PracticeLog[];progress:Record<string,number>;lastLesson:string;goal:number;rate:number;accent:string};
-export const initialState:LabState={review:[],logs:[],progress:{},lastLesson:'introductions',goal:10,rate:.85,accent:'en-US'};
+export type LabState={customLessons:ImportedLesson[];review:ReviewWord[];logs:PracticeLog[];progress:Record<string,number>;lastLesson:string;goal:number;rate:number;accent:string};
+export const initialState:LabState={customLessons:[],review:[],logs:[],progress:{},lastLesson:'introductions',goal:10,rate:.85,accent:'en-US'};
 export const localDay=(date=new Date())=>`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
-export function readState():LabState{try{const d=JSON.parse(localStorage.getItem('speaking-lab-v1')||'null');if(d&&Array.isArray(d.review)&&Array.isArray(d.logs))return {...initialState,...d,progress:d.progress||{}};}catch{}return {...initialState};}
+export function readState():LabState{try{const d=JSON.parse(localStorage.getItem('speaking-lab-v1')||'null');if(d&&Array.isArray(d.review)&&Array.isArray(d.logs))return {...initialState,...d,progress:d.progress||{},customLessons:readMaterials(d.customLessons)};}catch{}return {...initialState};}
 export function speak(text:string,rate:number,accent:string,onError:(s:string)=>void){
  if(!('speechSynthesis' in window)){onError('此瀏覽器不支援發音播放，請使用新版 Chrome、Edge 或 Safari。');return;}
  speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang=accent;u.rate=rate;

@@ -27,3 +27,17 @@ Browser QA covered desktop and mobile layouts, vocabulary collection, sentence s
 
 - https://developers.openai.com/api/docs/guides/text
 - https://learn.microsoft.com/en-us/azure/ai-services/speech-service/rest-speech-to-text-short
+
+## Personal material import
+
+The “我的教材” area starts empty. No user's files or QA fixtures are bundled. Learners can paste text or locally extract text from UTF-8 TXT/Markdown, text-based PDF, DOCX and PPTX, then inspect and edit a lesson before saving. File limits are 10 MB, 50 PDF pages, 50,000 text characters per material, and 30 materials per browser. Image/scanned PDFs have no OCR and report an actionable error. Complex columns and tables may need manual correction.
+
+The importer uses deterministic extraction, not AI: candidate vocabulary is selected from the material; shadowing sentences retain the source wording; translations and IPA are left blank until supplied by the learner. Source/adapted sentence labels are computed against the retained text. Generic conversation questions and answer hints are clearly marked as supplemental and editable. Exercise sizes may vary (1–12 words/sentences, 1–8 questions).
+
+Imported lessons use the existing four-stage practice flow, word review, session logging, optional AI text dialogue, and optional acoustic assessment. Original files are never uploaded by the importer. Only selected practice text is sent to OpenAI when the learner uses connected AI features. Local schema migration preserves prior logs, settings and review words. Material edits are checked before saving, and storage failure does not report success. Archive/restore retains history. Material JSON backup imports preserve existing items and assign a new ID to colliding copies; full learning-record exports also contain custom materials.
+
+`npm run dev` and `npm run build` copy the installed PDF.js worker into public assets so the worker and library versions match. Keep this step in the deployment build. The file is generated, not tracked.
+
+Additional QA: pasted material -> edit -> save -> all four practice stages, custom two-question dialogue, vocabulary collection, JSON export, PDF/DOCX/PPTX reading, and scanned-PDF errors. Backup parser/round-trip validation and prior-data migration are covered by checks/materials.mjs. Browser file selection for backup restoration was stopped after user declined the upload test; the end-to-end browser restore path has not been verified.
+
+To execute checks with current runtime imports, bundle each checks/*.mjs using the local esbuild binary (`--bundle --platform=node --format=esm`) into .sites-runtime, then run the emitted module with Node.

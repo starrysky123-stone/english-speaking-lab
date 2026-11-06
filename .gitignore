@@ -44,3 +44,5 @@ yarn-error.log*
 # OS metadata
 .DS_Store
 !.env.example
+
+/public/pdf.worker.min.mjs
